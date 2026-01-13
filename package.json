@@ -1,0 +1,73 @@
+{
+    "name": "n8n-nodes-llm-langfuse",
+    "version": "0.1.1",
+    "description": "Langfuse integration for n8n",
+    "license": "MIT",
+    "homepage": "",
+    "keywords": [
+        "n8n-community-node-package",
+        "langfuse",
+        "llm",
+        "openai",
+        "google",
+        "groq",
+        "observability"
+    ],
+    "author": {
+        "name": "Diwberg",
+        "email": "diwberg@gmail.com"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/diwberg/n8n-nodes-llm-langfuse.git"
+    },
+    "scripts": {
+        "build": "n8n-node build",
+        "build:watch": "tsc --watch",
+        "dev": "n8n-node dev",
+        "lint": "n8n-node lint",
+        "lint:fix": "n8n-node lint --fix",
+        "release": "n8n-node release",
+        "prepublishOnly": "n8n-node prerelease"
+    },
+    "files": [
+        "dist"
+    ],
+    "n8n": {
+        "n8nNodesApiVersion": 1,
+        "strict": true,
+        "credentials": [
+            "dist/credentials/OpenAiLangfuse.credentials.js",
+            "dist/credentials/GoogleLangfuse.credentials.js",
+            "dist/credentials/GroqLangfuse.credentials.js"
+        ],
+        "nodes": [
+            "dist/nodes/LmChatOpenAiLangfuse/LmChatOpenAiLangfuse.node.js",
+            "dist/nodes/LmChatGoogleLangfuse/LmChatGoogleLangfuse.node.js",
+            "dist/nodes/LmChatGroqLangfuse/LmChatGroqLangfuse.node.js"
+        ]
+    },
+    "devDependencies": {
+        "@n8n/node-cli": "*",
+        "@types/node": "^20.0.0",
+        "@types/proxy-from-env": "^1.0.4",
+        "eslint": "9.32.0",
+        "prettier": "3.6.2",
+        "release-it": "^19.0.4",
+        "typescript": "5.9.2",
+        "n8n-workflow": "*"
+    },
+    "dependencies": {
+        "@langchain/core": "^0.3.72",
+        "@langchain/google-genai": "^0.1.12",
+        "@langchain/groq": "^0.2.4",
+        "@langchain/openai": "^0.6.9",
+        "langfuse-langchain": "^3.0.0",
+        "openai": "^5.19.1",
+        "proxy-from-env": "^1.1.0",
+        "undici": "^7.15.0"
+    },
+    "peerDependencies": {
+        "n8n-workflow": "*"
+    }
+}
