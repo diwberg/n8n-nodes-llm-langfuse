@@ -1,46 +1,53 @@
 # n8n-nodes-llm-langfuse
 
-This is an n8n community node. It lets you use _app/service name_ in your n8n workflows.
+This is an n8n community node that provides custom LLM Chat Models with built-in **Langfuse** observability. It allows you to easily trace your LLM executions, monitor token usage, and debug complex chains directly from your n8n workflows.
 
-_App/service name_ is _one or two sentences describing the service this node integrates with_.
+## Features
 
-[n8n](https://n8n.io/) is a [fair-code licensed](https://docs.n8n.io/sustainable-use-license/) workflow automation platform.
-
-[Installation](#installation)
-[Operations](#operations)
-[Credentials](#credentials)
-[Compatibility](#compatibility)
-[Usage](#usage)
-[Resources](#resources)
-[Version history](#version-history)
+-   **Built-in Langfuse Tracing**: Automatically sends traces to Langfuse for every generation.
+-   **Multi-Provider Support**:
+    -   **OpenAI**: Chat with GPT-4o, GPT-4-turbo, and other OpenAI models.
+    -   **Groq**: Ultra-fast inference with Llama 3, Mixtral, and Gemma models.
+    -   **Google Gemini**: Use Gemini 1.5 Pro, Flash, and other Google models.
+-   **Advanced Configuration**:
+    -   Control `Temperature`, `Top P`, `Frequency Penalty`, `Presence Penalty`, `Max Tokens`, and more.
+    -   Pass custom **Langfuse Metadata**, **Session IDs**, and **User IDs** for better trace organization.
 
 ## Installation
 
 Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes/installation/) in the n8n community nodes documentation.
 
-## Operations
-
-_List the operations supported by your node._
+1.  In your n8n instance, go to **Settings > Community Nodes**.
+2.  Select **Install**.
+3.  Enter `n8n-nodes-llm-langfuse`.
 
 ## Credentials
 
-_If users need to authenticate with the app/service, provide details here. You should include prerequisites (such as signing up with the service), available authentication methods, and how to set them up._
+You will need to set up credentials for both the LLM provider and Langfuse.
 
-## Compatibility
+### Langfuse Credentials
+Required for all nodes in this package.
+-   **Public Key**: Your Langfuse project public key.
+-   **Secret Key**: Your Langfuse project secret key.
+-   **Base URL**: The Langfuse API URL (e.g., `https://cloud.langfuse.com` or your self-hosted instance).
 
-_State the minimum n8n version, as well as which versions you test against. You can also include any known version incompatibility issues._
+### Provider Credentials
+-   **OpenAI**: Your OpenAI API Key.
+-   **Groq**: Your Groq Cloud API Key.
+-   **Google Gemini**: Your Google AI Studio API Key.
 
 ## Usage
 
-_This is an optional section. Use it to help users with any difficult or confusing aspects of the node._
+These nodes act as **Chat Models** within n8n's AI ecosystem. You can use them in any LangChain chain or agent that accepts a Language Model.
 
-_By the time users are looking for community nodes, they probably already know n8n basics. But if you expect new users, you can link to the [Try it out](https://docs.n8n.io/try-it-out/) documentation to help them get started._
+1.  Add an **AI Agent** or **Chain** node to your workflow.
+2.  Connect one of the **Langfuse Chat Model** nodes (OpenAI, Groq, or Gemini) to the `Model` input.
+3.  Configure the node:
+    -   Select your **Credential**.
+    -   Choose the **Model** (e.g., `gpt-4o`, `llama-3.1-8b-instant`).
+    -   Adjust parameters like **Temperature** and **Max Tokens**.
+    -   (Optional) Add **Langfuse Metadata** to tag your traces (e.g., `{"environment": "production"}`).
 
-## Resources
+## License
 
-* [n8n community nodes documentation](https://docs.n8n.io/integrations/#community-nodes)
-* _Link to app/service documentation._
-
-## Version history
-
-_This is another optional section. If your node has multiple versions, include a short description of available versions and what changed, as well as any compatibility impact._
+MIT
