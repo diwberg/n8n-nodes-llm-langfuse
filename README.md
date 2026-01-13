@@ -48,6 +48,24 @@ These nodes act as **Chat Models** within n8n's AI ecosystem. You can use them i
     -   Adjust parameters like **Temperature** and **Max Tokens**.
     -   (Optional) Add **Langfuse Metadata** to tag your traces (e.g., `{"environment": "production"}`).
 
+## Support the Project 🚀
+
+If this node helped you, consider supporting the project! This helps us verify new providers, maintain the code, and keep improving the integration.
+
+**Pix (Brazil)**
+
+Scan the QR Code or copy the key below:
+
+![QR Code Pix](credentials/qr-pix.png)
+
+```
+00020101021126580014br.gov.bcb.pix0136d0a9da8d-573c-48af-8d56-b39af3852e2e5204000053039865802BR5920DIWBERG DE A PEREIRA6007GOIANIA62070503***6304555F
+```
+
+**Feedback & Suggestions**
+
+Feel free to open an issue on GitHub to suggest new features, request other LLM providers, or report bugs. Your feedback is essential to improve these nodes!
+
 ## License
 
 MIT
