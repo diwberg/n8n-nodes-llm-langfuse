@@ -7,6 +7,6 @@ npm-debug.log*
 yarn.lock
 .vscode/launch.json
 package-lock.json
-
+.npmrc
 # Local build artifacts (npm pack)
 n8n-nodes-llm-langfuse-*.tgz
