@@ -1,4 +1,4 @@
-/* eslint-disable n8n-nodes-base/node-dirname-against-convention */
+
 import {
     type INodeType,
     type INodeTypeDescription,
@@ -18,7 +18,7 @@ export class LmChatGoogleLangfuse implements INodeType {
         loadOptions: {
             async listModels(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
                 // Get credentials
-                const credentials = await this.getCredentials('googleLangfuse');
+                const credentials = await this.getCredentials('googleLangfuseApi');
                 const apiKey = credentials.apiKey;
 
                 try {
@@ -41,9 +41,9 @@ export class LmChatGoogleLangfuse implements INodeType {
                                 value,
                             };
                         });
-                } catch (error) {
-                    // Fail silently or return empty, n8n will show "No options found"
-                    console.error('Failed to list Google models', error);
+                } catch {
+                    // eslint-disable-next-line no-console
+                    console.error('Error loading gemini models');
                     return [];
                 }
             },
@@ -53,7 +53,7 @@ export class LmChatGoogleLangfuse implements INodeType {
     description: INodeTypeDescription = {
         displayName: 'Langfuse Chat Model (Google Gemini)',
         name: 'lmChatGoogleLangfuse',
-        icon: { light: 'file:../../credentials/gemini-langfuse.svg', dark: 'file:../../credentials/gemini-langfuse.svg' },
+        icon: { light: 'file:../../credentials/gemini-langfuse.svg', dark: 'file:../../credentials/gemini-langfuse-dark.svg' },
         group: ['transform'],
         version: 1,
         description: 'Google Gemini Chat Model with Langfuse Tracing',
@@ -74,24 +74,25 @@ export class LmChatGoogleLangfuse implements INodeType {
             },
         },
         inputs: [],
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         outputs: ['ai_languageModel' as any],
         outputNames: ['Model'],
         credentials: [
             {
-                name: 'googleLangfuse',
+                name: 'googleLangfuseApi',
                 required: true,
             },
         ],
         properties: [
             {
-                displayName: 'Model',
+                displayName: 'Model Name or ID',
                 name: 'model',
                 type: 'options',
-                description: 'The model to use',
+                description: 'The model to use. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
                 typeOptions: {
                     loadOptionsMethod: 'listModels',
                 },
-                default: 'gemini-2.5-flash',
+                default: '',
             },
             {
                 displayName: 'Gemini Options',
@@ -161,10 +162,11 @@ export class LmChatGoogleLangfuse implements INodeType {
                 ]
             },
         ],
+        usableAsTool: true,
     };
 
     async supplyData(this: ISupplyDataFunctions, itemIndex: number): Promise<SupplyData> {
-        const credentials = await this.getCredentials('googleLangfuse');
+        const credentials = await this.getCredentials('googleLangfuseApi');
 
         // --- Langfuse Config ---
         const langfuseSecretKey = credentials.langfuseSecretKey as string;
@@ -179,20 +181,24 @@ export class LmChatGoogleLangfuse implements INodeType {
         } = this.getNodeParameter('langfuseMetadata', itemIndex, {}) as {
             sessionId: string;
             userId?: string;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             customMetadata?: string | Record<string, any>;
         };
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let customMetadata: Record<string, any> = {};
 
         if (typeof customMetadataRaw === 'string') {
             try {
                 customMetadata = customMetadataRaw.trim()
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     ? jsonParse<Record<string, any>>(customMetadataRaw)
                     : {};
             } catch {
                 customMetadata = { _raw: customMetadataRaw }; // fallback
             }
         } else if (customMetadataRaw && typeof customMetadataRaw === 'object') {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             customMetadata = customMetadataRaw as Record<string, any>;
         }
 
@@ -216,6 +222,8 @@ export class LmChatGoogleLangfuse implements INodeType {
             maxOutputTokens?: number;
             topK?: number;
             topP?: number;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            [key: string]: any;
         };
 
         const apiKey = credentials.apiKey as string;
@@ -228,7 +236,6 @@ export class LmChatGoogleLangfuse implements INodeType {
             topK: geminiOptions.topK,
             topP: geminiOptions.topP,
             callbacks: [lfHandler, n8nHandler],
-            // @ts-ignore - metadata property might not be in all type definitions but supported in base class
             metadata: customMetadata,
         });
 

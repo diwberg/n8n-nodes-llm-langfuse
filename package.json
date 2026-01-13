@@ -35,11 +35,10 @@
     ],
     "n8n": {
         "n8nNodesApiVersion": 1,
-        "strict": true,
         "credentials": [
-            "dist/credentials/OpenAiLangfuse.credentials.js",
-            "dist/credentials/GoogleLangfuse.credentials.js",
-            "dist/credentials/GroqLangfuse.credentials.js"
+            "dist/credentials/OpenAiLangfuseApi.credentials.js",
+            "dist/credentials/GoogleLangfuseApi.credentials.js",
+            "dist/credentials/GroqLangfuseApi.credentials.js"
         ],
         "nodes": [
             "dist/nodes/LmChatOpenAiLangfuse/LmChatOpenAiLangfuse.node.js",

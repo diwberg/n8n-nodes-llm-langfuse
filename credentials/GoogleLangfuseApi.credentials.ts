@@ -5,12 +5,11 @@ import type {
     INodeProperties,
 } from 'n8n-workflow';
 
-export class GroqLangfuse implements ICredentialType {
-    name = 'groqLangfuse';
-    displayName = 'Langfuse Groq API';
+export class GoogleLangfuseApi implements ICredentialType {
+    name = 'googleLangfuseApi';
+    displayName = 'Langfuse Google Gemini API';
     documentationUrl = 'https://langfuse.com/docs/integrations/n8n';
-    icon = { light: 'file:groq-langfuse.svg', dark: 'file:groq-langfuse.svg' } as const;
-
+    icon = { light: 'file:gemini-langfuse.svg', dark: 'file:gemini-langfuse.svg' } as const;
     properties: INodeProperties[] = [
         {
             displayName: 'API Key',
@@ -43,22 +42,22 @@ export class GroqLangfuse implements ICredentialType {
             displayName: '⚠️ Validation limits',
             name: 'notice',
             type: 'notice',
-            default: 'The "Test Connection" button ONLY validates the Groq API Key. Langfuse credentials are not validated here; please check the logs or Langfuse dashboard after running a workflow.',
+            default: 'The "Test Connection" button ONLY validates the Google API Key. Langfuse credentials are not validated here; please check the logs or Langfuse dashboard after running a workflow.',
         },
     ];
 
     authenticate: IAuthenticateGeneric = {
         type: 'generic',
         properties: {
-            headers: {
-                Authorization: '=Bearer {{$credentials.apiKey}}',
+            qs: {
+                key: '={{$credentials.apiKey}}',
             },
         },
     };
 
     test: ICredentialTestRequest = {
         request: {
-            baseURL: 'https://api.groq.com/openai/v1',
+            baseURL: 'https://generativelanguage.googleapis.com/v1beta',
             url: '/models',
         },
     };

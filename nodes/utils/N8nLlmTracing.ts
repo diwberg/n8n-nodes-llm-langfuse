@@ -11,9 +11,20 @@ import {
 } from "n8n-workflow";
 import { logAiEvent } from "./helpers";
 
+interface IExtendedExecuteFunctions extends IExecuteFunctions {
+    getNextRunIndex(): number;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    addInputData(connectionType: string, data: any[], sourceNodeRunIndex?: number): { index: number };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    addOutputData(connectionType: string, runIndex: number, data: any[] | Error, unused?: undefined, sourceNodeRunIndex?: number): void;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    getNode(): any;
+}
+
 type RunDetail = {
     index: number;
     messages: BaseMessage[] | string[] | string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     options: any;
 };
 
@@ -33,12 +44,12 @@ export class N8nLlmTracing extends BaseCallbackHandler {
         try {
             const sourceNodeRunIndex =
                 this.#parentRunIndex !== undefined
-                    ? this.#parentRunIndex + (this.executionFunctions as any).getNextRunIndex?.()
+                    ? this.#parentRunIndex + (this.executionFunctions as unknown as IExtendedExecuteFunctions).getNextRunIndex?.()
                     : undefined;
 
             const options = (llm && llm.type === "constructor") ? llm.kwargs : llm;
 
-            const { index } = (this.executionFunctions as any).addInputData(
+            const { index } = (this.executionFunctions as unknown as IExtendedExecuteFunctions).addInputData(
                 this.connectionType,
                 [[{ json: { messages: prompts, options } }]],
                 sourceNodeRunIndex,
@@ -50,6 +61,7 @@ export class N8nLlmTracing extends BaseCallbackHandler {
                 messages: prompts,
             };
         } catch (error) {
+            // eslint-disable-next-line no-console
             console.warn('[N8nLlmTracing] handleLLMStart failed silently:', error);
         }
     }
@@ -63,7 +75,7 @@ export class N8nLlmTracing extends BaseCallbackHandler {
             const sourceNodeRunIndex =
                 this.#parentRunIndex !== undefined ? this.#parentRunIndex + runDetails.index : undefined;
 
-            (this.executionFunctions as any).addOutputData(
+            (this.executionFunctions as unknown as IExtendedExecuteFunctions).addOutputData(
                 this.connectionType,
                 runDetails.index,
                 [[{ json: response }]],
@@ -77,6 +89,7 @@ export class N8nLlmTracing extends BaseCallbackHandler {
                 response,
             });
         } catch (error) {
+            // eslint-disable-next-line no-console
             console.warn('[N8nLlmTracing] handleLLMEnd failed silently:', error);
         }
     }
@@ -84,15 +97,17 @@ export class N8nLlmTracing extends BaseCallbackHandler {
     async handleLLMError(error: IDataObject | Error, runId: string, parentRunId?: string) {
         const runDetails = this.runsMap[runId] ?? { index: 0, options: {}, messages: [] };
 
-        (this.executionFunctions as any).addOutputData(
+        (this.executionFunctions as unknown as IExtendedExecuteFunctions).addOutputData(
             this.connectionType,
             runDetails.index,
-            new NodeOperationError((this.executionFunctions as any).getNode(), error as JsonObject, {
+            new NodeOperationError((this.executionFunctions as unknown as IExtendedExecuteFunctions).getNode(), error as JsonObject, {
                 functionality: "configuration-node",
             }),
+            undefined,
         );
 
         logAiEvent(this.executionFunctions, "ai-llm-errored", {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             error: (error as any)?.message ?? String(error),
             runId,
             parentRunId,

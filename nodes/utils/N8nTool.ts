@@ -1,13 +1,20 @@
-import { DynamicStructuredTool } from "langchain/tools";
+import { DynamicStructuredTool } from "@langchain/core/tools";
+import type { CallbackManagerForToolRun } from "@langchain/core/callbacks/manager";
+import type { z } from "zod";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export class N8nTool extends DynamicStructuredTool<any> {
-    async _call(input: string, runManager?: any): Promise<any> {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async _call(input: string, runManager?: CallbackManagerForToolRun): Promise<any> {
         try {
-            const parser = this.schema as any;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const parser = (this as any).schema as z.ZodSchema<any>;
             const parsed = await parser.parseAsync(input);
-            return this.func(parsed, runManager);
-        } catch (err: any) {
-            throw new Error(`Tool input parse failed: ${err?.message ?? String(err)}`);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            return (this as any).func(parsed, runManager);
+        } catch (err) {
+            const message = err instanceof Error ? err.message : String(err);
+            throw new Error(`Tool input parse failed: ${message}`);
         }
     }
 }

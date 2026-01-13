@@ -6,8 +6,10 @@ export function logAiEvent(
     data?: IDataObject,
 ) {
     try {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (executeFunctions as any).logAiEvent(event, data ? JSON.stringify(data) : undefined);
-    } catch (error) {
+    } catch {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (executeFunctions as any).logger?.debug?.(`Error logging AI event: ${event}`);
     }
 }

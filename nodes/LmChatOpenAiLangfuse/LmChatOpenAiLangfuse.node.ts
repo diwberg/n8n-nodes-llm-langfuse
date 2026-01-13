@@ -1,4 +1,4 @@
-/* eslint-disable n8n-nodes-base/node-dirname-against-convention */
+
 import {
     type INodeType,
     type INodeTypeDescription,
@@ -18,7 +18,7 @@ export class LmChatOpenAiLangfuse implements INodeType {
     methods = {
         loadOptions: {
             async listModels(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
-                const credentials = await this.getCredentials('openAiLangfuse');
+                const credentials = await this.getCredentials('openAiLangfuseApi');
                 const apiKey = credentials.apiKey as string;
                 const baseUrl = 'https://api.openai.com/v1';
 
@@ -38,7 +38,7 @@ export class LmChatOpenAiLangfuse implements INodeType {
                             name: m.id,
                             value: m.id,
                         }));
-                } catch (error) {
+                } catch {
                     return [];
                 }
             },
@@ -69,24 +69,25 @@ export class LmChatOpenAiLangfuse implements INodeType {
             },
         },
         inputs: [],
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         outputs: ['ai_languageModel' as any],
         outputNames: ['Model'],
         credentials: [
             {
-                name: 'openAiLangfuse',
+                name: 'openAiLangfuseApi',
                 required: true,
             },
         ],
         properties: [
             {
-                displayName: 'Model',
+                displayName: 'Model Name or ID',
                 name: 'model',
                 type: 'options',
-                description: 'The model to use',
+                description: 'The model to use. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
                 typeOptions: {
                     loadOptionsMethod: 'listModels',
                 },
-                default: 'gpt-4o',
+                default: '',
             },
             {
                 displayName: 'OpenAI Options',
@@ -105,6 +106,13 @@ export class LmChatOpenAiLangfuse implements INodeType {
                         },
                         default: 0,
                         description: 'Penalizes new tokens based on their existing frequency in the text so far',
+                    },
+                    {
+                        displayName: 'Max Retries',
+                        name: 'max_retries',
+                        type: 'number',
+                        default: 3,
+                        description: 'Maximum number of retries to attempt',
                     },
                     {
                         displayName: 'Maximum Number of Tokens',
@@ -144,13 +152,6 @@ export class LmChatOpenAiLangfuse implements INodeType {
                         type: 'number',
                         default: 60000,
                         description: 'Maximum request time in milliseconds',
-                    },
-                    {
-                        displayName: 'Max Retries',
-                        name: 'max_retries',
-                        type: 'number',
-                        default: 3,
-                        description: 'Maximum number of retries to attempt',
                     },
                     {
                         displayName: 'Top P',
@@ -196,6 +197,7 @@ export class LmChatOpenAiLangfuse implements INodeType {
                 ]
             },
         ],
+        usableAsTool: true,
     };
 
     async supplyData(this: ISupplyDataFunctions, itemIndex: number): Promise<SupplyData> {
@@ -214,20 +216,24 @@ export class LmChatOpenAiLangfuse implements INodeType {
         } = this.getNodeParameter('langfuseMetadata', itemIndex, {}) as {
             sessionId: string;
             userId?: string;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             customMetadata?: string | Record<string, any>;
         };
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let customMetadata: Record<string, any> = {};
 
         if (typeof customMetadataRaw === 'string') {
             try {
                 customMetadata = customMetadataRaw.trim()
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     ? jsonParse<Record<string, any>>(customMetadataRaw)
                     : {};
             } catch {
                 customMetadata = { _raw: customMetadataRaw }; // fallback
             }
         } else if (customMetadataRaw && typeof customMetadataRaw === 'object') {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             customMetadata = customMetadataRaw as Record<string, any>;
         }
 
@@ -276,6 +282,7 @@ export class LmChatOpenAiLangfuse implements INodeType {
             configuration: {
                 baseURL: baseUrl,
                 httpAgent: proxyAgent,
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
             } as any,
             callbacks: [lfHandler, n8nHandler],
         });

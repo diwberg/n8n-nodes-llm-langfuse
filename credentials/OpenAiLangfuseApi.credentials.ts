@@ -5,11 +5,12 @@ import type {
     INodeProperties,
 } from 'n8n-workflow';
 
-export class GoogleLangfuse implements ICredentialType {
-    name = 'googleLangfuse';
-    displayName = 'Langfuse Google Gemini API';
+export class OpenAiLangfuseApi implements ICredentialType {
+    name = 'openAiLangfuseApi';
+    displayName = 'Langfuse OpenAi API';
     documentationUrl = 'https://langfuse.com/docs/integrations/n8n';
-    icon = { light: 'file:gemini-langfuse.svg', dark: 'file:gemini-langfuse.svg' } as const;
+
+    icon = { light: 'file:openai-langfuse.svg', dark: 'file:openai-langfuse-dark.svg' } as const;
     properties: INodeProperties[] = [
         {
             displayName: 'API Key',
@@ -42,22 +43,22 @@ export class GoogleLangfuse implements ICredentialType {
             displayName: '⚠️ Validation limits',
             name: 'notice',
             type: 'notice',
-            default: 'The "Test Connection" button ONLY validates the Google API Key. Langfuse credentials are not validated here; please check the logs or Langfuse dashboard after running a workflow.',
+            default: 'The "Test Connection" button ONLY validates the OpenAI API Key. Langfuse credentials are not validated here; please check the logs or Langfuse dashboard after running a workflow.',
         },
     ];
 
     authenticate: IAuthenticateGeneric = {
         type: 'generic',
         properties: {
-            qs: {
-                key: '={{$credentials.apiKey}}',
+            headers: {
+                Authorization: '=Bearer {{$credentials.apiKey}}',
             },
         },
     };
 
     test: ICredentialTestRequest = {
         request: {
-            baseURL: 'https://generativelanguage.googleapis.com/v1beta',
+            baseURL: 'https://api.openai.com/v1',
             url: '/models',
         },
     };

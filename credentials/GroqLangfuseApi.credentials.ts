@@ -5,12 +5,12 @@ import type {
     INodeProperties,
 } from 'n8n-workflow';
 
-export class OpenAiLangfuse implements ICredentialType {
-    name = 'openAiLangfuse';
-    displayName = 'Langfuse OpenAi API';
+export class GroqLangfuseApi implements ICredentialType {
+    name = 'groqLangfuseApi';
+    displayName = 'Langfuse Groq API';
     documentationUrl = 'https://langfuse.com/docs/integrations/n8n';
+    icon = { light: 'file:groq-langfuse.svg', dark: 'file:groq-langfuse.svg' } as const;
 
-    icon = { light: 'file:openai-langfuse.svg', dark: 'file:openai-langfuse-dark.svg' } as const;
     properties: INodeProperties[] = [
         {
             displayName: 'API Key',
@@ -43,7 +43,7 @@ export class OpenAiLangfuse implements ICredentialType {
             displayName: '⚠️ Validation limits',
             name: 'notice',
             type: 'notice',
-            default: 'The "Test Connection" button ONLY validates the OpenAI API Key. Langfuse credentials are not validated here; please check the logs or Langfuse dashboard after running a workflow.',
+            default: 'The "Test Connection" button ONLY validates the Groq API Key. Langfuse credentials are not validated here; please check the logs or Langfuse dashboard after running a workflow.',
         },
     ];
 
@@ -58,7 +58,7 @@ export class OpenAiLangfuse implements ICredentialType {
 
     test: ICredentialTestRequest = {
         request: {
-            baseURL: 'https://api.openai.com/v1',
+            baseURL: 'https://api.groq.com/openai/v1',
             url: '/models',
         },
     };
